@@ -64,7 +64,7 @@ STOPWORDS = {
     'in', 'out', 'on', 'off', 'over', 'under', 'again', 'further', 'then',
     'once', 'here', 'there', 'when', 'where', 'why', 'how', 'any',
     'each', 'few', 'more', 'other', 'such', 'nor',
-    'not', 'only', 'own', 'same', 'so', 'than', 'too', 'very', 's', 't',
+    'not', 'only', 'own', 'same', 'so', 'than', 'too', 'very', 's',
     'will', 'just', 'don', 'should', 'now', 'd', 'll', 'm', 'o', 've',
     'y', 'aren', 'couldn', 'didn', 'doesn', 'hadn', 'hasn', 'haven',
     'isn', 'ma', 'mightn', 'mustn', 'needn', 'shan', 'shouldn', 'wasn', 'weren',

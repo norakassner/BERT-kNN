@@ -221,10 +221,10 @@ if __name__ == "__main__":
     database_path = "./data/labels.db"
     labels_dict = LabelDB(database_path)
 
-    print("1. Google-RE")
+    """print("1. Google-RE")
     parameters = get_GoogleRE_parameters()
     run_all_LMs(parameters, index_faiss=ranker, labels_dict_id=labels_dict_id,
-                labels_dict=labels_dict)
+                labels_dict=labels_dict)"""
 
     print("3. ConceptNet")
     parameters = get_ConceptNet_parameters()

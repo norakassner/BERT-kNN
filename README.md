@@ -69,10 +69,10 @@ python db_target_creator.py
 
 ## Run BERT-kNN
 ```bash
-python main.py
+python scripts/main.py
 ```
 
 ## Eval BERT-kNN
 ```bash
-python eval_all.py
+python scripts/eval_all.py
 ```
