@@ -1,17 +1,25 @@
 This repository contains code for ["BERT-kNN: Adding a kNN Search Component to Pretrained Language Models for Better QA"](https://arxiv.org/pdf/2005.00766.pdf).
+The repository is forked from https://github.com/facebookresearch/LAMA and adapted accordingly.
 
 ## Citation
 If you use this code, please cite:
+```bibtex
+@misc{kassner2020bertknn,
+      title={BERT-kNN: Adding a kNN Search Component to Pretrained Language Models for Better QA}, 
+      author={Nora Kassner and Hinrich Schütze},
+      year={2020},
+      eprint={2005.00766},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+}
 
-    @misc{kassner2020bertknn,
-          title={BERT-kNN: Adding a kNN Search Component to Pretrained Language Models for Better QA}, 
-          author={Nora Kassner and Hinrich Schütze},
-          year={2020},
-          eprint={2005.00766},
-          archivePrefix={arXiv},
-          primaryClass={cs.CL}
-    }
-
+@inproceedings{petroni2019language,
+  title={Language Models as Knowledge Bases?},
+  author={F. Petroni, T. Rockt{\"{a}}schel, A. H. Miller, P. Lewis, A. Bakhtin, Y. Wu and S. Riedel},
+  booktitle={In: Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing (EMNLP), 2019},
+  year={2019}
+}
+```
 ## Setup
 ### 1. Create conda environment and install requirements
 
