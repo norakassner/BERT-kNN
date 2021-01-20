@@ -24,7 +24,7 @@ def main(path_TREx_relations):
         num = 0
         for r_micro in relations_macro[r_macro]:
             if os.path.isdir(output_path + r_micro + "/"):
-                with open(output_path + r + '/result.pkl', 'rb') as f:
+                with open(output_path + r_micro + '/result.pkl', 'rb') as f:
                     data = pickle.load(f)
                 for d in data["list_of_results"]:
                     P_1 += d['masked_topk']["P_AT_1"]
@@ -34,7 +34,10 @@ def main(path_TREx_relations):
         print("BERT-kNN: ", P_1/num)
         print("BERT: ", P_1_BERT/num)
         print("kNN: ", P_1_NN/num)
+        print("")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--TREx', '-r', required=True, type=str, help='path to TREx relations.jsonl file')
+    parser.add_argument('--relations', '-r', required=True, type=str, help='path to TREx relations.jsonl file')
+    args = parser.parse_args()
+    main(args.relations)
