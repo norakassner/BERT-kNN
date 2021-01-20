@@ -1,4 +1,21 @@
-form bert_knn import LabelDB
+from interpolated import main as run_evaluation
+from interpolated import load_file
+from bert_knn.modules import build_model_by_name
+from bert_knn.label_database import LabelDB
+
+import argparse
+import pprint
+import statistics
+from os import listdir
+import os
+from os.path import isfile, join
+from shutil import copyfile
+from collections import defaultdict
+import numpy as np
+import time
+import json
+from drqa import retriever
+import sqlite3
 
 LMs = [
     {
@@ -105,7 +122,7 @@ def run_experiments(
     return mean_p1, all_Precision1
 
 
-def get_TREx_parameters(data_path_pre="./data/"):
+def get_TREx_parameters(data_path_pre="./data/LAMA/"):
     relations = load_file("{}relations.jsonl".format(data_path_pre))
     data_path_pre += "TREx/"
     data_path_post = ".jsonl"
@@ -117,19 +134,19 @@ def get_GoogleRE_parameters():
         {"relation": "place_of_birth", "template": "[X] was born in [Y] ."},
         {"relation": "date_of_birth", "template": "[X] (born [Y])."},
         {"relation": "place_of_death", "template": "[X] died in [Y] ."}]
-    data_path_pre = "./data/Google_RE/"
+    data_path_pre = "./data/LAMA/Google_RE/"
     data_path_post = "_test.jsonl"
     return relations, data_path_pre, data_path_post
 
 
-def get_ConceptNet_parameters(data_path_pre="./data/"):
+def get_ConceptNet_parameters(data_path_pre="./data/LAMA/"):
     relations = [{"relation": "ConceptNet"}]
     data_path_pre += "ConceptNet/"
     data_path_post = ".jsonl"
     return relations, data_path_pre, data_path_post
 
 
-def get_Squad_parameters(data_path_pre="./data/"):
+def get_Squad_parameters(data_path_pre="./data/LAMA/"):
     relations = [{"relation": "Squad"}]
     data_path_pre += "Squad/"
     data_path_post = ".jsonl"
