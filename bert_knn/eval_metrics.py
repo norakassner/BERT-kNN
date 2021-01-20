@@ -54,29 +54,29 @@ def interpolate(distances, labels, predictions, topk=10):
     normalized_distances = normalize_exp(distances[0])
     normalized_distances = [[normalized_distances]]
 
-    probs_vocab_NN = torch.zeros(predictions.shape)
+    probs_vocab_nn = torch.zeros(predictions.shape)
     unique_predictions = np.unique(labels)
     for p in unique_predictions:
         idcs_unique = np.argwhere(labels == p)
-        probs_vocab_NN[p] = sum(normalized_distances[0][0][idcs_unique[0]])
+        probs_vocab_nn[p] = sum(normalized_distances[0][0][idcs_unique[0]])
 
     weighted = 0.3
-    probs_combined = weighted*probs_vocab_NN + (1-weighted)*predictions
+    probs_combined = weighted*probs_vocab_nn + (1-weighted)*predictions
 
-    max_probs, index_probs = torch.topk(input=probs_combined, k=topk, dim=0)
-    max_probs_BERT, index_probs_BERT = torch.topk(input=predictions, k=topk,
+    probs_combined, vocab_idcs_combined = torch.topk(input=probs_combined, k=topk, dim=0)
+    probs_bert, vocab_idcs_bert = torch.topk(input=predictions, k=topk,
                                                   dim=0)
-    max_probs_NN, index_probs_NN = torch.topk(input=probs_vocab_NN, k=topk,
+    probs_nn, vocab_idcs_nn = torch.topk(input=probs_vocab_nn, k=topk,
                                               dim=0)
 
-    return index_probs, max_probs, index_probs_BERT, max_probs_BERT, index_probs_NN, max_probs_NN
+    return (vocab_idcs_combined, probs_combined, vocab_idcs_bert, probs_bert, vocab_idcs_nn, probs_nn
 
 
 def get_ranking(predictions, log_probs, sample, vocab, ranker, labels_dict_id, labels_dict, label_index=None,
                 index_list=None):
     P_AT_1 = 0.
-    P_AT_1_NN = 0.
-    P_AT_1_BERT = 0.
+    P_AT_1_nn = 0.
+    P_AT_1_bert = 0.
 
     vocab_r = list(vocab.keys())
 
@@ -144,7 +144,7 @@ def get_ranking(predictions, log_probs, sample, vocab, ranker, labels_dict_id, l
 
     distances = [distances[0][0:idx_cut]]
 
-    probs_combined, max_probs, probs_BERT, max_probs_BERT, probs_NN, max_probs_NN, _, _ = \
+    vocab_idcs_combined, probs_combined, vocab_idcs_bert, probs_bert, vocab_idcs_nn, probs_nn = \
         interpolate(distances, labels, log_probs)
 
     if label_index is not None:
@@ -153,27 +153,27 @@ def get_ranking(predictions, log_probs, sample, vocab, ranker, labels_dict_id, l
         if index_list is not None:
             label_index = index_list.index(label_index)
         if len(labels) > 0:
-            if label_index == probs_NN[0]:
-                P_AT_1_NN = 1.
-            if label_index == probs_combined[0]:
+            if label_index == vocab_idcs_nn[0]:
+                P_AT_1_nn = 1.
+            if label_index == vocab_idcs_combined[0]:
                 P_AT_1 = 1.
-            if label_index in probs_BERT[0]:
-                P_AT_1_BERT = 1.
+            if label_index in vocab_idcs_bert[0]:
+                P_AT_1_bert = 1.
 
-    predictions_BERT = [vocab_r[idx] for idx in probs_BERT.tolist()]
-    predictions_combined = [vocab_r[idx] for idx in probs_combined.tolist()]
-    predictions_NN = [vocab_r[idx] for idx in probs_NN.tolist()]
+    predictions_bert = [vocab_r[idx] for idx in vocab_idcs_bert.tolist()]
+    predictions_combined = [vocab_r[idx] for idx in vocab_idcs_combined.tolist()]
+    predictions_nn = [vocab_r[idx] for idx in vocab_idcs_nn.tolist()]
     experiment_result["P_AT_1"] = P_AT_1
-    experiment_result["P_AT_1_NN"] = P_AT_1_NN
-    experiment_result["P_AT_1_BERT"] = P_AT_1_BERT
+    experiment_result["P_AT_1_nn"] = P_AT_1_nn
+    experiment_result["P_AT_1_bert"] = P_AT_1_bert
 
     experiment_result["documents"] = list(doc_names)
-    experiment_result["topk_BERT"] = predictions_BERT
+    experiment_result["topk_bert"] = predictions_bert
     experiment_result["topk_combined"] = predictions_combined
-    experiment_result["topk_NN"] = predictions_NN
-    experiment_result["probs_NN"] = max_probs_NN.tolist()
-    experiment_result["probs_BERT"] = max_probs_BERT.tolist()
-    experiment_result["probs_combined"] = max_probs.tolist()
+    experiment_result["topk_nn"] = predictions_nn
+    experiment_result["probs_nn"] = probs_nn.tolist()
+    experiment_result["probs_bert"] = probs_bert.tolist()
+    experiment_result["probs_combined"] = probs_combined.tolist()
     experiment_result["document_scores"] = list(doc_scores)
     experiment_result["labels"] = label_tokens
 

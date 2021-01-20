@@ -4,7 +4,8 @@ import os
 import numpy as np
 import pickle
 
-def main(path_TREx_relations):
+def main():
+    path_TREx_relations = "./data/relations.jsonl"
     output_path = "./output/results/bert_base/"
     relations_GoogleRE = ["place_of_birth", "date_of_birth", "place_of_death"]
     relations_macro = {"TREx": [], "GoogleRE": relations_GoogleRE, "Squad": ["Squad"], "ConceptNet": ["ConceptNet"]}
@@ -37,7 +38,4 @@ def main(path_TREx_relations):
         print("")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--relations', '-r', required=True, type=str, help='path to TREx relations.jsonl file')
-    args = parser.parse_args()
-    main(args.relations)
+    main()
