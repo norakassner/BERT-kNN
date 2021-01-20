@@ -69,8 +69,7 @@ def interpolate(distances, labels, predictions, topk=10):
     max_probs_NN, index_probs_NN = torch.topk(input=probs_vocab_NN, k=topk,
                                               dim=0)
 
-    return (index_probs, max_probs, index_probs_BERT, max_probs_BERT, index_probs_NN, max_probs_NN, probs_combined,
-            probs_vocab_NN)
+    return index_probs, max_probs, index_probs_BERT, max_probs_BERT, index_probs_NN, max_probs_NN
 
 
 def get_ranking(predictions, log_probs, sample, vocab, ranker, labels_dict_id, labels_dict, label_index=None,
@@ -145,7 +144,7 @@ def get_ranking(predictions, log_probs, sample, vocab, ranker, labels_dict_id, l
 
     distances = [distances[0][0:idx_cut]]
 
-    probs_combined, max_probs, probs_BERT, max_probs_BERT, probs_NN, max_probs_NN, probs_combined, probs_vocab_NN = \
+    probs_combined, max_probs, probs_BERT, max_probs_BERT, probs_NN, max_probs_NN, _, _ = \
         interpolate(distances, labels, log_probs)
 
     if label_index is not None:
@@ -161,17 +160,17 @@ def get_ranking(predictions, log_probs, sample, vocab, ranker, labels_dict_id, l
             if label_index in probs_BERT[0]:
                 P_AT_1_BERT = 1.
 
-    probs_BERT = [vocab_r[idx] for idx in probs_BERT.tolist()]
-    probs_combined = [vocab_r[idx] for idx in probs_combined.tolist()]
-    probs_NN = [vocab_r[idx] for idx in probs_NN.tolist()]
+    predictions_BERT = [vocab_r[idx] for idx in probs_BERT.tolist()]
+    predictions_combined = [vocab_r[idx] for idx in probs_combined.tolist()]
+    predictions_NN = [vocab_r[idx] for idx in probs_NN.tolist()]
     experiment_result["P_AT_1"] = P_AT_1
     experiment_result["P_AT_1_NN"] = P_AT_1_NN
     experiment_result["P_AT_1_BERT"] = P_AT_1_BERT
 
-    experiment_result["topk_NN"] = probs_NN
     experiment_result["documents"] = list(doc_names)
-    experiment_result["topk_BERT"] = probs_BERT
-    experiment_result["topk_combined"] = probs_combined
+    experiment_result["topk_BERT"] = predictions_BERT
+    experiment_result["topk_combined"] = predictions_combined
+    experiment_result["topk_NN"] = predictions_NN
     experiment_result["probs_NN"] = max_probs_NN.tolist()
     experiment_result["probs_BERT"] = max_probs_BERT.tolist()
     experiment_result["probs_combined"] = max_probs.tolist()
