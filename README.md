@@ -74,5 +74,5 @@ python scripts/main.py
 
 ## Eval BERT-kNN
 ```bash
-python scripts/eval_all.py
+python scripts/eval.py --relations ./data/LAMA/relations.jsonl
 ```
