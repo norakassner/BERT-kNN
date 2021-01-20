@@ -87,7 +87,7 @@ def get_ranking(predictions, log_probs, sample, vocab, ranker, labels_dict_id, l
     experiment_result = {}
     return_msg = ""
 
-    path_vectors = "/mounts/work/kassner/BERT_kNN_oldcode/data/vectors_drqa_retokenized_hidden/vectors_dump_"
+    path_vectors = "./data/vectors/vectors_dump_"
 
     N = 128
     num_ids = 3
