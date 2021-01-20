@@ -1,3 +1,5 @@
+import sqlite3
+
 class LabelDB(object):
     """Sqlite backed document storage.
     Implements get_doc_text(doc_id).

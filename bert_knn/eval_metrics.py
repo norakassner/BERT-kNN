@@ -110,7 +110,7 @@ def get_ranking(predictions, log_probs, sample, vocab, ranker, labels_dict_id, l
     all_idcs = []
     doc_weights = []
     index = faiss.IndexFlatL2(d)
-    print(filtered)
+
     for name, score in filtered:
         if name.lower() in labels_dict_id:
             idcs = labels_dict_id[name.lower()]
@@ -144,7 +144,7 @@ def get_ranking(predictions, log_probs, sample, vocab, ranker, labels_dict_id, l
 
     distances = [distances[0][0:idx_cut]]
 
-    probs_combined, max_probs, probs_BERT, max_probs_BERT, probs_NN, max_probs_NN, _, _ = \
+    probs_combined, max_probs, probs_BERT, max_probs_BERT, probs_NN, max_probs_NN = \
         interpolate(distances, labels, log_probs)
 
     if label_index is not None:
