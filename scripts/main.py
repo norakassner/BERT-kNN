@@ -231,12 +231,12 @@ if __name__ == "__main__":
     run_all_LMs(parameters, index_faiss=ranker, labels_dict_id=labels_dict_id,
                 labels_dict=labels_dict)
 
-    """print("2. T-REx")
+    print("2. T-REx")
     parameters = get_TREx_parameters()
     run_all_LMs(parameters, index_faiss=ranker, labels_dict_id=labels_dict_id,
-                labels_dict=labels_dict)"""
+                labels_dict=labels_dict)
 
-    """print("4. SQuAD")
+    print("4. SQuAD")
     parameters = get_Squad_parameters()
     run_all_LMs(parameters, index_faiss=ranker, labels_dict_id=labels_dict_id,
-                labels_dict=labels_dict)"""
+                labels_dict=labels_dict)

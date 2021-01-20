@@ -11,7 +11,7 @@ from tqdm import tqdm
 
 from bert_knn.modules import build_model_by_name
 import bert_knn.options as options
-import bert_knn.eval_metrics_ as metrics
+import bert_knn.eval_metrics as metrics
 import bert_knn.modules.base_connector as base
 import logging.config
 from multiprocessing.pool import ThreadPool
@@ -143,17 +143,14 @@ def run_thread(arguments):
     msg = ""
 
     # 1. compute the ranking metrics on the filtered log_probs tensor
-    experiment_result, return_msg = metrics.get_ranking_faster(
+    experiment_result, return_msg = metrics.get_ranking(
         arguments["prediction"],
         arguments["log_probs"],
-        arguments["masked_indices"],
         arguments["sample"],
         arguments["vocab"],
         arguments["ranker"],
         arguments["labels_dict_id"],
-        arguments["labels_dict"],
-        label_index=arguments["label_index"],
-        print_generation=arguments["interactive"]
+        arguments["labels_dict"]
     )
     msg += "\n" + return_msg
 
@@ -229,9 +226,7 @@ def filter_samples(model, samples, vocab_subset, max_sentence_length, template):
                     sample["obj_label"]
                 )
                 samples_exluded += 1
-            # elif vocab_subset is not None and sample['obj_label'] not in vocab_subset:
-            #   msg += "\tEXCLUDED object label {} not in vocab subset\n".format(sample['obj_label'])
-            #   samples_exluded+=1
+
             elif "judgments" in sample:
                 # only for Google-RE
                 num_no = 0
@@ -318,10 +313,8 @@ def main(args, ranker=None, labels_dict_id=None, labels_dict=None,
         all_samples = []
         for fact in facts:
             (sub, obj) = fact
-            sample = {}
-            sample["sub_label"] = sub
-            sample["obj_label"] = obj
-            # sobstitute all sentences with a standard template
+            sample = {"sub_label": sub, "obj_label": obj}
+            # substitute all sentences with a standard template
             sample["masked_sentences"] = parse_template(
                 args.template.strip(), sample["sub_label"].strip(), base.MASK
             )
@@ -387,7 +380,6 @@ def main(args, ranker=None, labels_dict_id=None, labels_dict=None,
                 "ranker": ranker,
                 "labels_dict_id": labels_dict_id,
                 "labels_dict": labels_dict,
-                "interactive": args.interactive,
             }
             for log_probs, masked_indices, prediction, label_index, sample in zip(
                 log_probs_list,
@@ -409,12 +401,8 @@ def main(args, ranker=None, labels_dict_id=None, labels_dict=None,
 
             sample = samples_b[idx]
 
-            element = {}
-            element["sample"] = sample
-            element["uuid"] = sample["uuid"]
-            element["label_index"] = label_index_list[idx]
-            element["masked_topk"] = result_masked_topk
-            element["sample_Precision1"] = result_masked_topk["P_AT_1"]
+            element = {"sample": sample, "uuid": sample["uuid"], "label_index": label_index_list[idx],
+                       "masked_topk": result_masked_topk, "sample_Precision1": result_masked_topk["P_AT_1"]}
 
             Precision1 += element["sample_Precision1"]
 

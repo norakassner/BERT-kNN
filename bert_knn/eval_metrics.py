@@ -49,42 +49,36 @@ def fvecs_read(fname, count=-1, offset=0):
     return ivecs_read(fname, count=count, offset=offset).view('float32')
 
 
-def interpolate(distances, doc_scores, labels, predictions, topk=10):
+def interpolate(distances, labels, predictions, topk=10):
     # normalizes NN probs
     normalized_distances = normalize_exp(distances[0])
     normalized_distances = [[normalized_distances]]
 
-    probes_vocab_NN = torch.zeros(predictions.shape)
+    probs_vocab_NN = torch.zeros(predictions.shape)
     unique_predictions = np.unique(labels)
     for p in unique_predictions:
         idcs_unique = np.argwhere(labels == p)
-        probes_vocab_NN[p] = sum(normalized_distances[0][0][idcs_unique[0]])
+        probs_vocab_NN[p] = sum(normalized_distances[0][0][idcs_unique[0]])
 
     weighted = 0.3
-    probes_combined = weighted*probes_vocab_NN + (1-weighted)*predictions
+    probs_combined = weighted*probs_vocab_NN + (1-weighted)*predictions
 
-    max_probs, index_probs = torch.topk(input=probes_combined, k=topk, dim=0)
+    max_probs, index_probs = torch.topk(input=probs_combined, k=topk, dim=0)
     max_probs_BERT, index_probs_BERT = torch.topk(input=predictions, k=topk,
                                                   dim=0)
-    max_probs_NN, index_probs_NN = torch.topk(input=probes_vocab_NN, k=topk,
+    max_probs_NN, index_probs_NN = torch.topk(input=probs_vocab_NN, k=topk,
                                               dim=0)
 
-    return (index_probs, max_probs, index_probs_BERT, max_probs_BERT,
-            index_probs_NN, max_probs_NN, probes_combined, probes_vocab_NN)
+    return (index_probs, max_probs, index_probs_BERT, max_probs_BERT, index_probs_NN, max_probs_NN, probs_combined,
+            probs_vocab_NN)
 
 
-def get_ranking_faster(predictions, log_probs, masked_indices, sample, vocab,
-                       ranker, labels_dict_id, labels_dict, label_index=None,
-                       index_list=None, P_AT=10, print_generation=True):
+def get_ranking(predictions, log_probs, sample, vocab, ranker, labels_dict_id, labels_dict, label_index=None,
+                index_list=None):
     P_AT_1 = 0.
-    P_AT_1_NN = 0.0
-    #P_AT_5 = 0.
-    #P_AT_5_NN = 0.0
-    #P_AT_10 = 0.
-    #P_AT_10_NN = 0.0
-    P_AT_1_BERT = 0.0
-    #P_AT_5_BERT = 0.0
-    #P_AT_10_BERT = 0.0
+    P_AT_1_NN = 0.
+    P_AT_1_BERT = 0.
+
     vocab_r = list(vocab.keys())
 
     labels = []
@@ -94,10 +88,7 @@ def get_ranking_faster(predictions, log_probs, masked_indices, sample, vocab,
     experiment_result = {}
     return_msg = ""
 
-    #path_vectors = "./data/vectors/vectors_dump_"
-    path_vectors = "/mounts/data/proj/kassner/BERT_kNN/data/vectors_drqa/vectors_dump_"
-    path_vectors = \
-        "/mounts/work/kassner/BERT_kNN_oldcode/data/vectors_drqa_retokenized_hidden/vectors_dump_"
+    path_vectors = "/mounts/work/kassner/BERT_kNN_oldcode/data/vectors_drqa_retokenized_hidden/vectors_dump_"
 
     N = 128
     num_ids = 3
@@ -135,7 +126,6 @@ def get_ranking_faster(predictions, log_probs, masked_indices, sample, vocab,
             scores = [score]*len(xt)
             doc_weights.extend(scores)
 
-    doc_weights = np.array(doc_weights)
     # search for NN
     distances, top_k = index.search(np.array([predictions]), N)
     idx_cut = len(top_k[0])
@@ -152,22 +142,13 @@ def get_ranking_faster(predictions, log_probs, masked_indices, sample, vocab,
             labels.append(int(label_vocab_idx))
             sentences.append(label_idx)
             label_tokens.append(label_token)
- 
-    doc_weights = doc_weights[top_k[0][0:idx_cut]]
+
     distances = [distances[0][0:idx_cut]]
 
-    probs_combined, max_probs, probs_BERT, max_probs_BERT, probs_NN, max_probs_NN, probes_combined, probes_vocab_NN = \
-        interpolate(distances, doc_weights, labels, log_probs)
+    probs_combined, max_probs, probs_BERT, max_probs_BERT, probs_NN, max_probs_NN, probs_combined, probs_vocab_NN = \
+        interpolate(distances, labels, log_probs)
 
     if label_index is not None:
-        tokens = torch.from_numpy(np.asarray(label_index))
-        lnprobs = torch.log(log_probs)
-        label_perplexity = lnprobs.gather(dim=0, index=tokens,)
-        lnprobs = torch.log(probes_combined)
-        label_perplexity = lnprobs.gather(dim=0, index=tokens,)
-
-        lnprobs = torch.log(probes_vocab_NN)
-        label_perplexity = lnprobs.gather(dim=0, index=tokens,)
 
         # check if the labe_index should be converted to the vocab subset
         if index_list is not None:
@@ -175,44 +156,26 @@ def get_ranking_faster(predictions, log_probs, masked_indices, sample, vocab,
         if len(labels) > 0:
             if label_index == probs_NN[0]:
                 P_AT_1_NN = 1.
-            """if label_index in probs_NN[0:5]:
-                P_AT_5_NN = 1.
-            if label_index in probs_NN[0:10]:
-                P_AT_10_NN = 1."""
             if label_index == probs_combined[0]:
                 P_AT_1 = 1.
-            """if label_index in probs_combined[0:5]:
-               P_AT_5 = 1.
-            if label_index in probs_combined[0:10]:
-                P_AT_10 = 1."""
             if label_index in probs_BERT[0]:
                 P_AT_1_BERT = 1.
-            """if label_index in probs_BERT[0:5]:
-               P_AT_5_BERT = 1.
-            if label_index in probs_BERT[0:10]:
-                P_AT_10_BERT = 1."""
+
     probs_BERT = [vocab_r[idx] for idx in probs_BERT.tolist()]
     probs_combined = [vocab_r[idx] for idx in probs_combined.tolist()]
     probs_NN = [vocab_r[idx] for idx in probs_NN.tolist()]
     experiment_result["P_AT_1"] = P_AT_1
-    """experiment_result["P_AT_5"] = P_AT_5
-    experiment_result["P_AT_10"] = P_AT_10"""
     experiment_result["P_AT_1_NN"] = P_AT_1_NN
-    """experiment_result["P_AT_5_NN"] = P_AT_5_NN
-    experiment_result["P_AT_10_NN"] = P_AT_10_NN"""
     experiment_result["P_AT_1_BERT"] = P_AT_1_BERT
-    """experiment_result["P_AT_5_BERT"] = P_AT_5_BERT
-    experiment_result["P_AT_10_BERT"] = P_AT_10_BERT"""
-    #experiment_result["sentence"] = sentences
+
     experiment_result["topk_NN"] = probs_NN
     experiment_result["documents"] = list(doc_names)
     experiment_result["topk_BERT"] = probs_BERT
     experiment_result["topk_combined"] = probs_combined
     experiment_result["probs_NN"] = max_probs_NN.tolist()
     experiment_result["probs_BERT"] = max_probs_BERT.tolist()
-    experiment_result["probes_combined"] = max_probs.tolist()
+    experiment_result["probs_combined"] = max_probs.tolist()
     experiment_result["document_scores"] = list(doc_scores)
-    experiment_result["distances"] = distances
     experiment_result["labels"] = label_tokens
 
     experiment_result["sample"] = sample["masked_sentences"]
