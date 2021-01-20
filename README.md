@@ -49,7 +49,7 @@ python scripts/main.py
 
 ## Eval BERT-kNN
 ```bash
-python scripts/eval.py --relations ./data/LAMA/relations.jsonl
+python scripts/eval.py
 ```
 ## Citation
 If you use this code, please cite:
