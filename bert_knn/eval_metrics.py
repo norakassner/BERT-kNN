@@ -69,7 +69,7 @@ def interpolate(distances, labels, predictions, topk=10):
     probs_nn, vocab_idcs_nn = torch.topk(input=probs_vocab_nn, k=topk,
                                               dim=0)
 
-    return (vocab_idcs_combined, probs_combined, vocab_idcs_bert, probs_bert, vocab_idcs_nn, probs_nn
+    return vocab_idcs_combined, probs_combined, vocab_idcs_bert, probs_bert, vocab_idcs_nn, probs_nn
 
 
 def get_ranking(predictions, log_probs, sample, vocab, ranker, labels_dict_id, labels_dict, label_index=None,
@@ -110,7 +110,7 @@ def get_ranking(predictions, log_probs, sample, vocab, ranker, labels_dict_id, l
     all_idcs = []
     doc_weights = []
     index = faiss.IndexFlatL2(d)
-    print(filtered)
+
     for name, score in filtered:
         if name.lower() in labels_dict_id:
             idcs = labels_dict_id[name.lower()]
