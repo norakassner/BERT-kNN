@@ -1,69 +1,4 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
-# All rights reserved.
-#
-# This source code is licensed under the license found in the
-# LICENSE file in the root directory of this source tree.
-#
-from interpolated import main as run_evaluation
-from interpolated import load_file
-from bert_knn.modules import build_model_by_name
-
-import argparse
-import pprint
-import statistics
-from os import listdir
-import os
-from os.path import isfile, join
-from shutil import copyfile
-from collections import defaultdict
-import numpy as np
-import time
-import json
-from drqa import retriever
-import sqlite3
-
-
-class LabelDB(object):
-    """Sqlite backed document storage.
-    Implements get_doc_text(doc_id).
-    """
-
-    def __init__(self, db_path=''):
-        self.path = db_path
-        self.connection = sqlite3.connect(self.path, check_same_thread=False)
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, *args):
-        self.close()
-
-    def path(self):
-        """Return the path to the file that backs this database."""
-        return self.path
-
-    def close(self):
-        """Close the connection to the database."""
-        self.connection.close()
-
-    def get_instance_id(self):
-        """Fetch all ids of docs stored in the db."""
-        cursor = self.connection.cursor()
-        cursor.execute("SELECT instance_id FROM labels")
-        results = [r[0] for r in cursor.fetchall()]
-        cursor.close()
-        return results
-
-    def get_labels(self, instance_id):
-        """Fetch the raw text of the doc for 'doc_id'."""
-        cursor = self.connection.cursor()
-        cursor.execute(
-            "SELECT label FROM labels WHERE instance_id = ?",
-            (instance_id,)
-        )
-        result = cursor.fetchone()
-        cursor.close()
-        return result if result is None else result[0]
+form bert_knn import LabelDB
 
 LMs = [
     {
@@ -170,7 +105,7 @@ def run_experiments(
     return mean_p1, all_Precision1
 
 
-def get_TREx_parameters(data_path_pre="/mounts/work/kassner/LAMA/data/"):
+def get_TREx_parameters(data_path_pre="./data/"):
     relations = load_file("{}relations.jsonl".format(data_path_pre))
     data_path_pre += "TREx/"
     data_path_post = ".jsonl"
@@ -182,19 +117,19 @@ def get_GoogleRE_parameters():
         {"relation": "place_of_birth", "template": "[X] was born in [Y] ."},
         {"relation": "date_of_birth", "template": "[X] (born [Y])."},
         {"relation": "place_of_death", "template": "[X] died in [Y] ."}]
-    data_path_pre = "/mounts/work/kassner/LAMA/data/Google_RE/"
+    data_path_pre = "./data/Google_RE/"
     data_path_post = "_test.jsonl"
     return relations, data_path_pre, data_path_post
 
 
-def get_ConceptNet_parameters(data_path_pre="/mounts/work/kassner/LAMA/data/"):
+def get_ConceptNet_parameters(data_path_pre="./data/"):
     relations = [{"relation": "ConceptNet"}]
     data_path_pre += "ConceptNet/"
     data_path_post = ".jsonl"
     return relations, data_path_pre, data_path_post
 
 
-def get_Squad_parameters(data_path_pre="/mounts/work/kassner/LAMA/data/"):
+def get_Squad_parameters(data_path_pre="./data/"):
     relations = [{"relation": "Squad"}]
     data_path_pre += "Squad/"
     data_path_post = ".jsonl"
