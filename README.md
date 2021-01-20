@@ -22,22 +22,22 @@ rm data.zip
 
 ## Pre-processing
 
-### get Wikipedia corpus by DrQA
+### 1. get Wikipedia corpus by DrQA
 ```bash
 git clone https://github.com/facebookresearch/DrQA.git
 ```
 
-### preprocess wikipedia
+### 2. preprocess wikipedia
 ```bash
 python batch_wikipdia.py --path_db_wirkipedia_drqa "DrAQ/data/wikipedia/docs.db"
 ```
 
-### context embeddings
+### 3. context embeddings
 ```bash
 python encode_context.py --dump 0
 ```
 (write a shell script in order to run multiple dumps in parallel)
-### database target words
+### 4. database target words
 ```bash
 python db_target_creator.py
 ```
