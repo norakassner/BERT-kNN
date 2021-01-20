@@ -104,7 +104,7 @@ def run_experiments(
                 data_path_pre, relation["relation"], data_path_post
             ),
             "template": "",
-            "batch_size": 124,
+            "batch_size": 224,
             "logdir": "output",
             "full_logdir": "output/results/{}/{}".format(
                 input_param["label"], relation["relation"]
@@ -221,22 +221,22 @@ if __name__ == "__main__":
     database_path = "./data/labels.db"
     labels_dict = LabelDB(database_path)
 
-    """print("1. Google-RE")
+    print("1. Google-RE")
     parameters = get_GoogleRE_parameters()
     run_all_LMs(parameters, index_faiss=ranker, labels_dict_id=labels_dict_id,
-                labels_dict=labels_dict)"""
+                labels_dict=labels_dict)
 
     print("3. ConceptNet")
     parameters = get_ConceptNet_parameters()
     run_all_LMs(parameters, index_faiss=ranker, labels_dict_id=labels_dict_id,
                 labels_dict=labels_dict)
 
-    print("2. T-REx")
+    """print("2. T-REx")
     parameters = get_TREx_parameters()
     run_all_LMs(parameters, index_faiss=ranker, labels_dict_id=labels_dict_id,
-                labels_dict=labels_dict)
+                labels_dict=labels_dict)"""
 
-    print("4. SQuAD")
+    """print("4. SQuAD")
     parameters = get_Squad_parameters()
     run_all_LMs(parameters, index_faiss=ranker, labels_dict_id=labels_dict_id,
-                labels_dict=labels_dict)
+                labels_dict=labels_dict)"""

@@ -52,21 +52,21 @@ def hash(token, num_buckets):
 
 
 STOPWORDS = {
-    'i', 'me', 'my', 'myself', 'our', 'ours', 'ourselves', 'you', 'your',
-    'yours', 'yourself', 'yourselves', 'him', 'his', 'himself',
+    'my', 'myself', 'our', 'ours', 'ourselves', 'you', 'your',
+    'yours', 'yourselves', 'him', 'his', 'himself',
     'her', 'hers', 'herself', 'it', 'its', 'itself', 'they', 'them', 'their',
-    'theirs', 'themselves', 'what', 'which', 'who', 'whom', 'this', 'that',
-    'these', 'those', 'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being',
-    'have', 'has', 'had', 'having', 'do', 'does', 'did', 'doing', 'a', 'an',
-    'the', 'and', 'if', 'or', 'because', 'as', 'until', 'while', 'of',
+    'theirs', 'themselves', 'whom', 'this', 'that',
+    'these', 'those', 'am', 'are', 'were', 'be', 'been', 'being',
+    'have', 'has', 'had', 'having', 'do', 'does', 'did', 'doing', 'an',
+    'the', 'and', 'if', 'or', 'because', 'as', 'until', 'while',
     'at', 'by', 'for', 'with', 'about', 'against', 'between', 'into', 'through',
-    'during', 'before', 'after', 'above', 'below', 'to', 'from', 'up', 'down',
+    'during', 'before', 'after', 'above', 'below', 'to', 'from', 'up',
     'in', 'out', 'on', 'off', 'over', 'under', 'again', 'further', 'then',
     'once', 'here', 'there', 'when', 'where', 'why', 'how', 'any',
     'each', 'few', 'more', 'other', 'such', 'nor',
-    'not', 'only', 'own', 'same', 'so', 'than', 'too', 'very', 's',
-    'will', 'just', 'don', 'should', 'now', 'd', 'll', 'm', 'o', 've',
-    'y', 'aren', 'couldn', 'didn', 'doesn', 'hadn', 'hasn', 'haven',
+    'not', 'only', 'own', 'same', 'so', 'than', 'too', 'very',
+    'will', 'just', 'don', 'll', 've',
+    'aren', 'couldn', 'didn', 'doesn', 'hadn', 'hasn', 'haven',
     'isn', 'ma', 'mightn', 'mustn', 'needn', 'shan', 'shouldn', 'wasn', 'weren',
     'won', 'wouldn', "'ll", "'re", "'ve", "n't", "'s", "'d", "'m", "''", "``"
 }

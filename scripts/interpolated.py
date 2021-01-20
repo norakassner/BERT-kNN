@@ -353,6 +353,7 @@ def main(args, ranker=None, labels_dict_id=None, labels_dict=None,
 
         samples_b = samples_batches[i]
         sentences_b = sentences_batches[i]
+
         pooled_output = model.get_hidden_state(sentences_b, try_cuda=True)
         log_probs_list, masked_indices_list = model.get_batch_generation(sentences_b, logger=logger, try_cuda=True)
         xq = sanitize(pooled_output)
